@@ -13,6 +13,11 @@ const LABEL_WIDTH = 144; // matches the room-label column's w-36
 export function Timeline({ date, rooms }: { date: Date; rooms: Room[] }) {
   const { getReservationsForRoom } = useReservations();
   const [selected, setSelected] = useState<{ room: Room; start: Date } | null>(null);
+  // Positioned via JS (not CSS group-hover) because a group-hover tooltip
+  // placed inside the horizontally-scrolling grid gets clipped: setting
+  // overflow-x forces the browser to also clip overflow-y, so anything
+  // poking above/below a cell near the grid's edge never becomes visible.
+  const [pastTooltip, setPastTooltip] = useState<{ left: number; top: number } | null>(null);
 
   const openHour = Math.min(...rooms.map((r) => r.openHour), 9);
   const closeHour = Math.max(...rooms.map((r) => r.closeHour), 19);
@@ -98,7 +103,11 @@ export function Timeline({ date, rooms }: { date: Date; rooms: Room[] }) {
                         key={i}
                         style={{ width: SLOT_WIDTH }}
                         className="shrink-0 border-l bg-muted/40 py-2"
-                        title="過去の時間には予約できません"
+                        onMouseEnter={(e) => {
+                          const r = e.currentTarget.getBoundingClientRect();
+                          setPastTooltip({ left: r.left + r.width / 2, top: r.bottom + 4 });
+                        }}
+                        onMouseLeave={() => setPastTooltip(null)}
                       />
                     );
                   }
@@ -118,6 +127,15 @@ export function Timeline({ date, rooms }: { date: Date; rooms: Room[] }) {
           })}
         </div>
       </div>
+
+      {pastTooltip && (
+        <div
+          className="pointer-events-none fixed z-50 -translate-x-1/2 rounded bg-foreground px-2 py-1 text-[11px] whitespace-nowrap text-background"
+          style={{ left: pastTooltip.left, top: pastTooltip.top }}
+        >
+          過去の時間には予約できません
+        </div>
+      )}
 
       {selected && (
         <ReservationDialog
