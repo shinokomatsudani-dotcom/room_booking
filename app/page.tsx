@@ -7,7 +7,7 @@ import { getRoomNowStatus } from "@/lib/availability";
 import { RoomCard } from "@/components/room-card";
 import { Timeline } from "@/components/timeline";
 import { EquipmentFilter, roomMatchesFilters, type RoomFilters } from "@/components/equipment-filter";
-import { toDateInputValue } from "@/lib/format";
+import { formatDateLabel, toDateInputValue } from "@/lib/format";
 
 export default function Home() {
   const { getReservationsForRoom } = useReservations();
@@ -42,9 +42,20 @@ export default function Home() {
       <div className="hidden h-full md:flex">
         <aside className="w-64 shrink-0 border-r p-4">
           <div className="mb-4 flex flex-col gap-1.5">
-            <label htmlFor="timeline-date" className="text-xs text-muted-foreground">
-              日付
-            </label>
+            <div className="flex items-center justify-between">
+              <label htmlFor="timeline-date" className="text-xs text-muted-foreground">
+                日付
+              </label>
+              {dateValue !== toDateInputValue(new Date()) && (
+                <button
+                  type="button"
+                  onClick={() => setDateValue(toDateInputValue(new Date()))}
+                  className="text-xs text-primary hover:underline"
+                >
+                  今日に戻す
+                </button>
+              )}
+            </div>
             <input
               id="timeline-date"
               type="date"
@@ -52,6 +63,9 @@ export default function Home() {
               onChange={(e) => setDateValue(e.target.value)}
               className="rounded-lg border border-input px-2.5 py-1.5 text-sm"
             />
+            <p className="text-xs text-muted-foreground">
+              本日: {formatDateLabel(new Date().toISOString())}
+            </p>
           </div>
           <EquipmentFilter filters={filters} onChange={setFilters} />
         </aside>

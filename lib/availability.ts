@@ -37,6 +37,14 @@ export function getRoomNowStatus(
   return { available: true, untilLabel: formatTime(closeToday.toISOString()) };
 }
 
+export function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
 export type TimeSlot = { hour: number; minute: number; label: string };
 
 export function generateTimeSlots(

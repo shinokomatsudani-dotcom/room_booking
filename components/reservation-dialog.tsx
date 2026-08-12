@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import type { Room } from "@/lib/types";
 import { useReservations } from "@/hooks/use-reservations";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { combineDateAndTime, toDateInputValue, toTimeInputValue } from "@/lib/format";
+import { combineDateAndTime, formatDateLabel, toDateInputValue, toTimeInputValue } from "@/lib/format";
 import {
   Dialog,
   DialogContent,
@@ -108,6 +108,9 @@ export function ReservationDialog({
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                 />
+                <p className="text-xs text-muted-foreground">
+                  本日: {formatDateLabel(new Date().toISOString())}
+                </p>
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="res-start" className="text-xs text-muted-foreground">

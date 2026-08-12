@@ -1,5 +1,6 @@
 import type { Reservation, ReservationInput, ReservationResult } from "@/lib/types";
 import { getRoomById } from "@/lib/rooms";
+import { formatDateTime } from "@/lib/format";
 
 const STORAGE_KEY = "room-booking:reservations";
 
@@ -56,6 +57,42 @@ function buildSeed(): Reservation[] {
       endAt: atToday(17, 0),
       organizer: "田中実",
       attendeeCount: 4,
+    },
+    {
+      id: "seed-5",
+      roomId: "room-3",
+      title: "1on1",
+      startAt: atToday(13, 0),
+      endAt: atToday(13, 30),
+      organizer: "高橋あゆみ",
+      attendeeCount: 2,
+    },
+    {
+      id: "seed-6",
+      roomId: "room-5",
+      title: "朝会",
+      startAt: atToday(9, 30),
+      endAt: atToday(10, 0),
+      organizer: "伊藤誠",
+      attendeeCount: 5,
+    },
+    {
+      id: "seed-7",
+      roomId: "room-1",
+      title: "経営会議",
+      startAt: atToday(10, 0, 1),
+      endAt: atToday(11, 0, 1),
+      organizer: "中村優子",
+      attendeeCount: 3,
+    },
+    {
+      id: "seed-8",
+      roomId: "room-4",
+      title: "全体研修",
+      startAt: atToday(14, 0, 1),
+      endAt: atToday(16, 0, 1),
+      organizer: "小林大輔",
+      attendeeCount: 15,
     },
   ];
 }
@@ -128,7 +165,10 @@ export function createReservation(input: ReservationInput): ReservationResult {
     return { ok: false, error: "終了時間は開始時間より後にしてください。" };
   }
   if (start.getTime() < Date.now()) {
-    return { ok: false, error: "過去の時間には予約できません。" };
+    return {
+      ok: false,
+      error: `過去の時間には予約できません（現在: ${formatDateTime(new Date())}）。日付を確認してください。`,
+    };
   }
 
   const room = getRoomById(input.roomId);

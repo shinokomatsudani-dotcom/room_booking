@@ -13,6 +13,16 @@ export function formatDateLabel(iso: string): string {
   });
 }
 
+export function formatDateTime(date: Date): string {
+  return date.toLocaleString("ja-JP", {
+    month: "numeric",
+    day: "numeric",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export function dateKey(iso: string): string {
   const d = new Date(iso);
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;

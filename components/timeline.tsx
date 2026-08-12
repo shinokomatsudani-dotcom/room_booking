@@ -3,12 +3,13 @@
 import { useState } from "react";
 import type { Room } from "@/lib/types";
 import { useReservations } from "@/hooks/use-reservations";
-import { generateTimeSlots, isSlotBusy } from "@/lib/availability";
+import { generateTimeSlots, isSameDay, isSlotBusy } from "@/lib/availability";
 import { cn } from "@/lib/utils";
 import { ReservationDialog } from "@/components/reservation-dialog";
 
 const STEP_MINUTES = 30;
 const SLOT_WIDTH = 56;
+const LABEL_WIDTH = 144; // matches the room-label column's w-36
 
 export function Timeline({ date, rooms }: { date: Date; rooms: Room[] }) {
   const { getReservationsForRoom } = useReservations();
@@ -17,6 +18,11 @@ export function Timeline({ date, rooms }: { date: Date; rooms: Room[] }) {
   const openHour = Math.min(...rooms.map((r) => r.openHour), 9);
   const closeHour = Math.max(...rooms.map((r) => r.closeHour), 19);
   const slots = generateTimeSlots(openHour, closeHour, STEP_MINUTES);
+
+  const now = new Date();
+  const nowMinutesFromOpen = (now.getHours() - openHour) * 60 + now.getMinutes();
+  const showNowLine = isSameDay(date, now) && nowMinutesFromOpen >= 0 && nowMinutesFromOpen <= (closeHour - openHour) * 60;
+  const nowLineLeft = LABEL_WIDTH + (nowMinutesFromOpen / STEP_MINUTES) * SLOT_WIDTH;
 
   function slotDate(hour: number, minute: number) {
     const d = new Date(date);
@@ -35,7 +41,17 @@ export function Timeline({ date, rooms }: { date: Date; rooms: Room[] }) {
   return (
     <>
       <div className="overflow-x-auto">
-        <div className="inline-block min-w-full">
+        <div className="relative inline-block min-w-full">
+          {showNowLine && (
+            <div
+              className="pointer-events-none absolute top-0 z-20 h-full w-px bg-red-500"
+              style={{ left: nowLineLeft }}
+            >
+              <span className="absolute -top-4 -translate-x-1/2 rounded bg-red-500 px-1 text-[10px] whitespace-nowrap text-white">
+                現在
+              </span>
+            </div>
+          )}
           <div className="flex border-b">
             <div className="sticky left-0 z-10 w-36 shrink-0 bg-background" />
             {slots.map((slot, i) => (
