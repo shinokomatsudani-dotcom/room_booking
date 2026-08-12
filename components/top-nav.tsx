@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 const ITEMS = [
-  { href: "/", label: "タイムライン" },
   { href: "/rooms", label: "会議室一覧" },
   { href: "/my-reservations", label: "自分の予約" },
 ];
@@ -18,7 +17,13 @@ export function TopNav() {
   return (
     <header className="hidden items-center justify-between border-b px-6 py-3 md:flex">
       <div className="flex items-center gap-8">
-        <Link href="/" className="font-heading text-sm font-semibold">
+        <Link
+          href="/"
+          className={cn(
+            "font-heading text-sm font-semibold",
+            pathname === "/" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+          )}
+        >
           会議室予約
         </Link>
         <nav className="flex gap-4">
