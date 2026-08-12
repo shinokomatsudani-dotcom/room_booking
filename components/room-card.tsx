@@ -19,10 +19,31 @@ export function RoomCard({
   const { getReservationsForRoom } = useReservations();
   const [dialogOpen, setDialogOpen] = useState(false);
   const status = getRoomNowStatus(room, getReservationsForRoom(room.id), new Date());
+  const tapToBook = compact && status.available;
+
+  function openDialog() {
+    if (status.available) setDialogOpen(true);
+  }
 
   return (
     <>
-      <Card size="sm">
+      <Card
+        size="sm"
+        role={tapToBook ? "button" : undefined}
+        tabIndex={tapToBook ? 0 : undefined}
+        onClick={tapToBook ? openDialog : undefined}
+        onKeyDown={
+          tapToBook
+            ? (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openDialog();
+                }
+              }
+            : undefined
+        }
+        className={tapToBook ? "cursor-pointer transition-colors hover:bg-accent/50" : undefined}
+      >
         <CardHeader>
           <CardTitle>{room.name}</CardTitle>
           <CardDescription>{room.location}</CardDescription>

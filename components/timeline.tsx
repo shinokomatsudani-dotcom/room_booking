@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Room } from "@/lib/types";
 import { useReservations } from "@/hooks/use-reservations";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { generateTimeSlots, isSameDay, isSlotBusy } from "@/lib/availability";
 import { ReservationDialog } from "@/components/reservation-dialog";
 
@@ -12,6 +13,7 @@ const LABEL_WIDTH = 144; // matches the room-label column's w-36
 
 export function Timeline({ date, rooms }: { date: Date; rooms: Room[] }) {
   const { getReservationsForRoom } = useReservations();
+  const { name } = useCurrentUser();
   const [selected, setSelected] = useState<{ room: Room; start: Date } | null>(null);
   // Positioned via JS (not CSS group-hover) because a group-hover tooltip
   // placed inside the horizontally-scrolling grid gets clipped: setting
@@ -44,6 +46,16 @@ export function Timeline({ date, rooms }: { date: Date; rooms: Room[] }) {
 
   return (
     <>
+      <div className="flex items-center gap-4 border-b px-3 py-2 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block size-2.5 rounded-sm bg-primary" />
+          自分の予約
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block size-2.5 rounded-sm bg-busy" />
+          他の人の予約
+        </span>
+      </div>
       <div className="overflow-x-auto">
         <div className="relative inline-block min-w-full">
           {showNowLine && (
@@ -85,11 +97,16 @@ export function Timeline({ date, rooms }: { date: Date; rooms: Room[] }) {
                   const isPast = end.getTime() <= Date.now();
 
                   if (busy) {
+                    const isMine = busy.organizer === name;
                     return (
                       <div
                         key={i}
                         style={{ width: SLOT_WIDTH }}
-                        className="shrink-0 border-l bg-busy px-1 py-2 text-[11px] text-busy-foreground"
+                        className={`shrink-0 border-l px-1 py-2 text-[11px] ${
+                          isMine
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-busy text-busy-foreground"
+                        }`}
                         title={busy.title}
                       >
                         {isLabelSlot ? <span className="line-clamp-2">{busy.title}</span> : null}
