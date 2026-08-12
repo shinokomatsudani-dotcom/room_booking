@@ -18,7 +18,9 @@ export function TopNav() {
   return (
     <header className="hidden items-center justify-between border-b px-6 py-3 md:flex">
       <div className="flex items-center gap-8">
-        <span className="font-heading text-sm font-semibold">会議室予約</span>
+        <Link href="/" className="font-heading text-sm font-semibold">
+          会議室予約
+        </Link>
         <nav className="flex gap-4">
           {ITEMS.map(({ href, label }) => (
             <Link
