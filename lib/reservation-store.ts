@@ -117,9 +117,12 @@ function notify() {
 function ensureHydrated() {
   if (hydrated || typeof window === "undefined") return;
   hydrated = true;
-  const stored = readFromStorage();
-  reservations = stored ?? buildSeed();
-  if (!stored) persist();
+  // Seed reservations are recomputed relative to "now" on every load (and
+  // replace any stale seed-* entries) so the demo data always lines up with
+  // today, instead of freezing at whatever date it was first generated.
+  const userReservations = (readFromStorage() ?? []).filter((r) => !r.id.startsWith("seed-"));
+  reservations = [...buildSeed(), ...userReservations];
+  persist();
 }
 
 export function subscribe(listener: Listener) {

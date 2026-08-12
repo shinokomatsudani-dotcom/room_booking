@@ -4,7 +4,6 @@ import { useState } from "react";
 import type { Room } from "@/lib/types";
 import { useReservations } from "@/hooks/use-reservations";
 import { generateTimeSlots, isSameDay, isSlotBusy } from "@/lib/availability";
-import { cn } from "@/lib/utils";
 import { ReservationDialog } from "@/components/reservation-dialog";
 
 const STEP_MINUTES = 30;
@@ -93,17 +92,24 @@ export function Timeline({ date, rooms }: { date: Date; rooms: Room[] }) {
                     );
                   }
 
+                  if (isPast) {
+                    return (
+                      <div
+                        key={i}
+                        style={{ width: SLOT_WIDTH }}
+                        className="shrink-0 border-l bg-muted/40 py-2"
+                        title="過去の時間には予約できません"
+                      />
+                    );
+                  }
+
                   return (
                     <button
                       key={i}
                       type="button"
-                      disabled={isPast}
                       onClick={() => setSelected({ room, start })}
                       style={{ width: SLOT_WIDTH }}
-                      className={cn(
-                        "shrink-0 border-l py-2 transition-colors",
-                        isPast ? "bg-muted/40" : "hover:bg-accent"
-                      )}
+                      className="shrink-0 border-l py-2 transition-colors hover:bg-accent"
                     />
                   );
                 })}
